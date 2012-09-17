@@ -6,7 +6,7 @@
 // run an image processing algorithm on each one.
 // 
 // Compile by running
-// g++ % -o imgproc_viewer -lopencv_core -lopencv_highgui -lopencv_imgproc
+// g++ imgproc_viewer -o imgproc_viewer -lopencv_core -lopencv_highgui -lopencv_imgproc
 //
 ////////////////////////////////////////////////////////////////////////
 
@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
   cvNamedWindow("Original Image", CV_WINDOW_AUTOSIZE); 
   cvMoveWindow("Original Image", 0, 0);
   namedWindow("Processed Image", CV_WINDOW_AUTOSIZE);
-  cvMoveWindow("Processed Image", 700, 600);
+  cvMoveWindow("Processed Image", 200, 200);
 
   createTrackbar("Image Number:", "Original Image",
     &current_image_index, filenames.size() - 1, loadImage);
