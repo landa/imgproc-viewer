@@ -22,6 +22,7 @@ using namespace std;
 
 int current_image_index = 0;
 vector<string> filenames;
+Mat** loaded_images;
 
 Mat getProcessedImage(Mat img) {
   Mat processed;
@@ -53,10 +54,15 @@ vector<string> getFileNamesInDirectory(char* directory) {
 }
 
 void loadImage(int, void*) {
-  Mat img;
-  img = imread(filenames[current_image_index].c_str());
-  Mat processedImage = getProcessedImage(img);
-  imshow("Original Image", img);
+  Mat *img = new Mat();
+  if (loaded_images[current_image_index] != 0) {
+    img = loaded_images[current_image_index];
+  } else {
+    *img = imread(filenames[current_image_index].c_str());
+    loaded_images[current_image_index] = img;
+  }
+  Mat processedImage = getProcessedImage(*img);
+  imshow("Original Image", *img);
   imshow("Processed Image", processedImage);
 }
 
@@ -67,6 +73,9 @@ int main(int argc, char *argv[]) {
   }
 
   filenames = getFileNamesInDirectory(argv[1]);
+  
+  loaded_images = new Mat *[filenames.size()];
+  memset(loaded_images, 0, filenames.size()*sizeof(Mat*));
 
   namedWindow("Original Image", CV_WINDOW_AUTOSIZE); 
   moveWindow("Original Image", 0, 0);
