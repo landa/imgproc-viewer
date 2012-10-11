@@ -6,7 +6,7 @@
 // run an image processing algorithm on each one.
 // 
 // Compile by running
-// g++ imgproc_viewer -o imgproc_viewer -lopencv_core -lopencv_highgui -lopencv_imgproc
+// g++ -o imgproc_viewer imgproc_viewer.cpp `pkg-config --libs opencv`
 //
 ////////////////////////////////////////////////////////////////////////
 
@@ -23,13 +23,10 @@ using namespace std;
 int current_image_index = 0;
 vector<string> filenames;
 
-IplImage* getProcessedImage(IplImage* img) {
-  IplImage* imgHSV = cvCreateImage(cvGetSize(img), 8, 3);
-  cvCvtColor(img, imgHSV, CV_BGR2HSV);
-  IplImage* imgThreshed = cvCreateImage(cvGetSize(img), 8, 1);
-  cvInRangeS(imgHSV, cvScalar(60, 100, 100), cvScalar(120, 255, 255), imgThreshed);
-  cvReleaseImage(&imgHSV);
-  return imgThreshed;
+Mat getProcessedImage(Mat img) {
+  Mat processed;
+  dilate(img, processed, Mat(), Point(-1, -1));
+  return processed;
 }
 
 // modified from http://stackoverflow.com/
@@ -56,11 +53,11 @@ vector<string> getFileNamesInDirectory(char* directory) {
 }
 
 void loadImage(int, void*) {
-  IplImage* img = 0; 
-  img = cvLoadImage(filenames[current_image_index].c_str());
-  IplImage* processedImage = getProcessedImage(img);
-  cvShowImage("Original Image", img);
-  cvShowImage("Processed Image", processedImage);
+  Mat img;
+  img = imread(filenames[current_image_index].c_str());
+  Mat processedImage = getProcessedImage(img);
+  imshow("Original Image", img);
+  imshow("Processed Image", processedImage);
 }
 
 int main(int argc, char *argv[]) {
@@ -71,10 +68,10 @@ int main(int argc, char *argv[]) {
 
   filenames = getFileNamesInDirectory(argv[1]);
 
-  cvNamedWindow("Original Image", CV_WINDOW_AUTOSIZE); 
-  cvMoveWindow("Original Image", 0, 0);
+  namedWindow("Original Image", CV_WINDOW_AUTOSIZE); 
+  moveWindow("Original Image", 0, 0);
   namedWindow("Processed Image", CV_WINDOW_AUTOSIZE);
-  cvMoveWindow("Processed Image", 200, 200);
+  moveWindow("Processed Image", 200, 200);
 
   createTrackbar("Image Number:", "Original Image",
     &current_image_index, filenames.size() - 1, loadImage);
